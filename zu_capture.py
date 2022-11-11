@@ -82,7 +82,7 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
         t_now = datetime.datetime.now()
 
         # Get weather
-        txt = f'\n今日の天気だワン\n{gw.get_weather("厚木市")}'
+        txt = f'おはようございます\n今日の厚木市の天気だワン\n{gw.get_weather("厚木市")}'
         line_notify.send_line(txt, user=myv.USER)
 
         # Get traffic
@@ -91,7 +91,7 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
             txt = f'\n今は東名下りに渋滞は無いみたいだワン'
         else:
             txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
-        line_notify.send_line(txt, user=myv.USER)
+        line_notify.send_line(txt, user=myv.USER, stamp=True)
 
     ###############################
     # get video frame (only one time per FRAME_CYCLE)
