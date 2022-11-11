@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service
 
 
 def get_traffic():
+    result = ''
     try:
         path = '/usr/bin/chromedriver'
         options = Options()
@@ -22,13 +23,24 @@ def get_traffic():
         elems = driver.find_elements(By.CLASS_NAME, 'traffic-result-row')
         for e in elems:
             if e.text.startswith('東名<下り>'):
-                return e.text.replace('東名<下り>\n', '').replace('渋滞\n', '')
+                jam_info = e.text.replace('東名<下り>\n', '').replace('渋滞\n', '')
+                if '渋滞の情報はありません' not in jam_info:
+                    result = jam_info
+                break
+        
+        driver.quit()
 
+        return result
     except:
         traceback.print_exc()
+        driver.quit()
 
-        return ''
+        return result
 
 
 if __name__ == '__main__':
-    print(get_traffic())
+    jam = get_traffic()
+    if jam == '':
+        print('なし！')
+    else:
+        print(jam)
