@@ -39,3 +39,13 @@ INTERVAL = 600  # [sec]
 # imshow size for debugging
 DISP_SIZE = (3, 3)
 
+# LINE stamp
+LINE_STAMP = {446: list(range(1998, 2028)),
+              789: list(range(10855, 10895)),
+              1070: list(range(17839, 17879)),
+              6136: list(range(10551376, 10551400)),
+              8515: list(range(16581242, 16581266)),
+              11537: list(range(52002734, 52002774)),
+              11538: list(range(51626494, 51626534)),
+              11539: list(range(52114110, 52114150)),
+              6325: list(range(10979904, 10979928))}
