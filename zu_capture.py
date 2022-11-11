@@ -70,7 +70,7 @@ while True:
 f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
 今日も一日お疲れ様でした。
 ズーカメラは明日の朝{myv.TIME_START}時までお休みします。"""
-        line_notify.send_line(message, user=myv.USER)
+        line_notify.send_line(message, user=myv.USER, stamp=True)
 
         # sleep until TIME_START
         time_start = datetime.datetime(t_now.year, t_now.month, t_now.day,

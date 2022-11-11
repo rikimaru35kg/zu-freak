@@ -1,16 +1,22 @@
 import requests
+import random
 
 import keyring
 
+import const
+
 
 def main():
-    send_line('送りたい文章')
+    send_line('送りたい文章', user='me', stamp=True)
 
-def send_line(notification_message, img=None, user=None):
+def send_line(notification_message, img=None, user=None, stamp=False):
     """Notify LINE
 
     Arguments:
         notification_message (str): Message to be sent
+        img (str): Image file path
+        user (str): LINE user
+        stamp (bool): Send stamp or not
     """
     if user == 'me':
         line_notify_token = keyring.get_password('line', 'me')
@@ -21,7 +27,12 @@ def send_line(notification_message, img=None, user=None):
 
     line_notify_api = 'https://notify-api.line.me/api/notify'
     headers = {'Authorization': f'Bearer {line_notify_token}'}
-    data = {'message': f'{notification_message}'}
+    if stamp:
+        package = random.choice(list(const.LINE_STAMP.keys()))
+        sticker = random.choice(const.LINE_STAMP[package])
+        data = {'message': f'{notification_message}', 'stickerPackageId': package, 'stickerId': sticker}
+    else:
+        data = {'message': f'{notification_message}'}
 
     if img is not None:
         f = open(img, 'rb')
@@ -30,6 +41,7 @@ def send_line(notification_message, img=None, user=None):
         f.close()
     else:
         requests.post(line_notify_api, headers=headers, data=data)
+
 
 if __name__ == "__main__":
     main()
