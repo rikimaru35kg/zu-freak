@@ -1,6 +1,6 @@
 # LINE receiver
-USER = 'family'
-# USER = 'me'
+# USER = 'family'
+USER = 'me'
 
 # STOP & START time [hour]
 TIME_START = 6
