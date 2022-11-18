@@ -10,6 +10,7 @@ import line_notify
 import const as myv
 import get_weather as gw
 import get_traffic as gt
+import zu_notify_funcs as zu
 # import detect_fps as dfps
 
 
@@ -65,6 +66,7 @@ while True:
     # Stop procdure from TIME_STOP ~ TIME_START
     ###############################
     t_now = datetime.datetime.now()
+    # t_now = t_now + datetime.timedelta(hours=12)  # debug
     if t_now.hour >= myv.TIME_STOP:
         message = \
 f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
@@ -82,7 +84,7 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
         t_now = datetime.datetime.now()
 
         # Get weather
-        txt = f'おはようございます\n今日の厚木市の天気だワン\n{gw.get_weather("厚木市")}'
+        txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{gw.get_weather("厚木市")}'
         line_notify.send_line(txt, user=myv.USER)
 
         # Get traffic
@@ -92,6 +94,10 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
         else:
             txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
         line_notify.send_line(txt, user=myv.USER, stamp=True)
+
+        # Send holiday information
+        if t_now.isoweekday() == 1:
+            zu.zu_holiday()
 
     ###############################
     # get video frame (only one time per FRAME_CYCLE)
