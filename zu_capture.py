@@ -8,7 +8,6 @@ import keyring
 
 import line_notify
 import const as myv
-import get_traffic as gt
 import zu_notify_funcs as zu
 
 
@@ -82,13 +81,8 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
         # Send weather information
         zu.zu_weather()
 
-        # Get traffic
-        jam = gt.get_traffic()
-        if jam == '':
-            txt = f'\n今は東名下りに渋滞は無いみたいだワン'
-        else:
-            txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
-        line_notify.send_line(txt, user=myv.USER, stamp=True)
+        # Send traffic information
+        zu.zu_traffic()
 
         # Send holiday information
         if t_now.isoweekday() == 1:

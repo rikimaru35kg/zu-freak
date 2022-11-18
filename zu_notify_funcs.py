@@ -5,6 +5,7 @@ import requests
 import const
 import line_notify
 import get_weather
+import get_traffic
 
 
 def zu_holiday():
@@ -41,6 +42,14 @@ def zu_weather():
     txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{get_weather.get_weather("厚木市")}'
     line_notify.send_line(txt, user=const.USER)
 
+def zu_traffic():
+    jam = get_traffic.get_traffic()
+    if jam == '':
+        txt = f'\n今は東名下りに渋滞は無いみたいだワン'
+    else:
+        txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
+    line_notify.send_line(txt, user=const.USER, stamp=True)
+
 
 if __name__ == '__main__':
-    zu_weather()
+    zu_traffic()
