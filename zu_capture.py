@@ -1,6 +1,6 @@
 import sys
 import time
-import datetime
+import datetime as dt
 
 import cv2
 import numpy as np
@@ -23,6 +23,14 @@ cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
 roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
 v_move = 0
+# t_state
+t_hour = dt.datetime.now().hour
+if t_hour <= myv.TIME_1:
+    t_state = 0
+elif t_hour <= myv.TIME_2:
+    t_state = 1
+else:
+    t_state = 2
 
 # Main procedure
 frame_num = 0
@@ -31,8 +39,26 @@ while True:
     ###############################
     # Stop procdure from TIME_STOP ~ TIME_START
     ###############################
-    t_now = datetime.datetime.now()
-    if t_now.hour >= myv.TIME_STOP:
+    t_now = dt.datetime.now()
+    if ( (t_state == 0) and
+           (t_now.hour >= myv.TIME_1)):
+        # Send weather information
+        zu.zu_weather()
+
+        # transition state
+        t_state += 1
+    elif ( (t_state == 1) and
+           (t_now.hour >= myv.TIME_2)):
+        # Send weather information
+        zu.zu_weather()
+
+        # Send traffic information
+        zu.zu_traffic()
+
+        # transition state
+        t_state += 1
+    elif ( (t_state == 2) and
+           (t_now.hour >= myv.TIME_STOP)):
         # Sleep until TIME_START
         zu.zu_sleep()
 
@@ -43,11 +69,14 @@ while True:
         zu.zu_traffic()
 
         # Recalculate t_now
-        t_now = datetime.datetime.now()
+        t_now = dt.datetime.now()
 
         # Send holiday information
         if t_now.isoweekday() == 1:
             zu.zu_holiday()
+        
+        # Reset state
+        t_state = 0
 
     ###############################
     # get video frame (only one time per FRAME_CYCLE)
