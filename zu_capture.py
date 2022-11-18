@@ -61,28 +61,18 @@ while True:
     # Stop procdure from TIME_STOP ~ TIME_START
     ###############################
     t_now = datetime.datetime.now()
-    # t_now = t_now + datetime.timedelta(hours=12)  # debug
     if t_now.hour >= myv.TIME_STOP:
-        message = \
-f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
-今日も一日お疲れ様でした。
-ズーカメラは明日の朝{myv.TIME_START}時までお休みします。"""
-        line_notify.send_line(message, user=myv.USER, stamp=True)
-
-        # sleep until TIME_START
-        time_start = datetime.datetime(t_now.year, t_now.month, t_now.day,
-                                       myv.TIME_START, t_now.minute, t_now.second)
-        t_delta = time_start + datetime.timedelta(days=1) - t_now
-        time.sleep(t_delta.seconds)
-
-        # Recalculate t_now
-        t_now = datetime.datetime.now()
+        # Sleep until TIME_START
+        zu.zu_sleep()
 
         # Send weather information
         zu.zu_weather()
 
         # Send traffic information
         zu.zu_traffic()
+
+        # Recalculate t_now
+        t_now = datetime.datetime.now()
 
         # Send holiday information
         if t_now.isoweekday() == 1:
