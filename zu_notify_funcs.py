@@ -51,12 +51,13 @@ def zu_weather():
     line_notify.send_line(txt, user=const.USER)
 
 
-def zu_traffic():
-    jam = get_traffic.get_traffic()
+def zu_traffic(direction='down'):
+    jam = get_traffic.get_traffic(direction)
+    _str = '下り' if direction == 'down' else '上り'
     if jam == '':
-        txt = f'\n今は東名下りに渋滞は無いみたいだワン'
+        txt = f'\n今は東名{_str}に渋滞は無いみたいだワン'
     else:
-        txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
+        txt = f'\n東名{_str}に渋滞が発生しているワン\n{jam}'
     line_notify.send_line(txt, user=const.USER, stamp=True)
 
 
@@ -93,7 +94,7 @@ def zu_holiday():
 
 
 if __name__ == '__main__':
-    import numpy as np
+    # import numpy as np
     # zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
-    zu_weather()
-    
+    # zu_weather()
+    zu_traffic('down')

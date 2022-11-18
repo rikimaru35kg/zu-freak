@@ -53,7 +53,7 @@ while True:
         zu.zu_weather()
 
         # Send traffic information
-        zu.zu_traffic()
+        zu.zu_traffic('up')
 
         # transition state
         t_state += 1
@@ -66,7 +66,7 @@ while True:
         zu.zu_weather()
 
         # Send traffic information
-        zu.zu_traffic()
+        zu.zu_traffic('down')
 
         # Recalculate t_now
         t_now = dt.datetime.now()
