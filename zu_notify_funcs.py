@@ -2,11 +2,33 @@ import time
 import datetime as dt
 
 import requests
+import keyring
+import cv2
 
 import const
 import line_notify
 import get_weather
 import get_traffic
+
+
+def zu_notify(t_now, frame, user):
+    """Send LINE message
+    
+    Args:
+        t_now (datetime): current time
+        frame (np.ndarray): Image to be sent
+    """
+    message = f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
+    ズーカメラで動きが検知されました。
+
+    現在のズー
+    {keyring.get_password('zu', 'zu1')}
+
+    現在＋過去のズー
+    {keyring.get_password('zu', 'zu2')}"""
+
+    cv2.imwrite('zu.png', frame)
+    line_notify.send_line(message, 'zu.png', user)
 
 
 def zu_sleep():
@@ -71,4 +93,5 @@ def zu_holiday():
 
 
 if __name__ == '__main__':
-    zu_sleep()
+    import numpy as np
+    zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)

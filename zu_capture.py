@@ -4,9 +4,7 @@ import datetime
 
 import cv2
 import numpy as np
-import keyring
 
-import line_notify
 import const as myv
 import zu_notify_funcs as zu
 
@@ -18,35 +16,8 @@ def increment_frame_num(i, max):
     else:
         return i + 1
 
-
-def zu_notify(t_now, frame, user):
-    """Send LINE message
-    
-    Args:
-        t_now (datetime): current time
-        frame (np.ndarray): Image to be sent
-    """
-    message = \
-f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
-ズーカメラで動きが検知されました。
-
-現在のズー
-{keyring.get_password('zu', 'zu1')}
-
-現在＋過去のズー
-{keyring.get_password('zu', 'zu2')}"""
-
-    cv2.imwrite('zu.png', frame)
-    line_notify.send_line(message, 'zu.png', user)
-    cv2.imwrite(f'videos/pictures/debug_{t_now.strftime("%y%m%d_%H%M%S")}.png', roi)
-
-
+# Capture the video
 cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_065015.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_073516.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_074016.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_085016.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221104_084702.mp4')
 
 # Preparation
 roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
@@ -84,8 +55,6 @@ while True:
     if frame_num == 0:
         ret, frame = cap.read()
         frame_num = increment_frame_num(frame_num, frame_cycle)
-        # fps.update_fps()
-        # print(fps.get_fps())
         
         # Read error
         if not ret:
@@ -168,14 +137,12 @@ while True:
     if v_move >= myv.V_MOVE_THRE:
         # First detection
         if 't_save' not in locals():
-            # t_now = datetime.datetime.now()
-            zu_notify(t_now, roi, myv.USER)
+            zu.zu_notify(t_now, roi, myv.USER)
             t_save = t_now
         # After first detection
         else:
-            # t_now = datetime.datetime.now()
             if (t_now - t_save).seconds >= myv.INTERVAL:
-                zu_notify(t_now, roi, myv.USER)
+                zu.zu_notify(t_now, roi, myv.USER)
                 t_save = t_now
         
     ###############################
@@ -194,18 +161,6 @@ while True:
         hybrid[2*roi_size[1]:3*roi_size[1], 2*roi_size[0]:3*roi_size[0]] = 0
     
         cv2.imshow('hy', hybrid)
-
-    # ###############################
-    # # Update frame cycle
-    # ###############################
-    # if ( (frame_cycle == myv.FRAME_CYCLE) and
-    #      (fps.get_fps() <= 13)):
-    #     frame_cycle = 1
-    #     print(f'frame_cycle is changed to {frame_cycle}')
-    # elif ( (frame_cycle < myv.FRAME_CYCLE) and
-    #        (fps.get_fps() >= 20)):
-    #     frame_cycle = myv.FRAME_CYCLE
-    #     print(f'frame_cycle is changed to {frame_cycle}')
 
     ###############################
     # wait key
