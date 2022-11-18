@@ -47,7 +47,7 @@ def zu_sleep():
 
 
 def zu_weather():
-    txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{get_weather.get_weather("厚木市")}'
+    txt = f'\n厚木市のこれからの天気だワン\n{get_weather.get_weather("厚木市")}'
     line_notify.send_line(txt, user=const.USER)
 
 
@@ -94,4 +94,6 @@ def zu_holiday():
 
 if __name__ == '__main__':
     import numpy as np
-    zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
+    # zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
+    zu_weather()
+    

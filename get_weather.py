@@ -1,3 +1,5 @@
+import datetime as dt
+
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -19,16 +21,18 @@ def get_weather(dest='厚木市'):
                       for v in today.select_one('.precipitation').find_all('td')]
     
     txt = ''
+    t_hour = dt.datetime.now().hour
     for i in range(len(hours)):
-        txt += f'{hours[i]}: {weathers[i]} {temps[i]}'
-        txt += '\n'
+        if int(hours[i].replace('時', '')) >= t_hour:
+            txt += f'{hours[i]}: {weathers[i]} {temps[i]}'
+            txt += '\n'
     txt += '\n--- 降水確率と降雨量 ---\n'
     for i in range(len(hours)):
-        txt += f'{hours[i]}: {probs[i]} {precipitations[i]}'
-        if i != len(hours) - 1:
-            txt += '\n'
+        if int(hours[i].replace('時', '')) >= t_hour:
+            txt += f'{hours[i]}: {probs[i]} {precipitations[i]}'
+            if i != len(hours) - 1:
+                txt += '\n'
 
-    print(txt)
     return txt
 
 
