@@ -4,6 +4,7 @@ import requests
 
 import const
 import line_notify
+import get_weather
 
 
 def zu_holiday():
@@ -36,6 +37,10 @@ def zu_holiday():
         
         line_notify.send_line(message, user=const.USER, stamp=True)
 
+def zu_weather():
+    txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{get_weather.get_weather("厚木市")}'
+    line_notify.send_line(txt, user=const.USER)
+
 
 if __name__ == '__main__':
-    zu_holiday()
+    zu_weather()

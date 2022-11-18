@@ -8,10 +8,8 @@ import keyring
 
 import line_notify
 import const as myv
-import get_weather as gw
 import get_traffic as gt
 import zu_notify_funcs as zu
-# import detect_fps as dfps
 
 
 def increment_frame_num(i, max):
@@ -56,8 +54,6 @@ roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
 v_move = 0
 
-# fps = dfps.FpsDetector()
-
 # Main procedure
 frame_num = 0
 frame_cycle = myv.FRAME_CYCLE
@@ -83,9 +79,8 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
         # Recalculate t_now
         t_now = datetime.datetime.now()
 
-        # Get weather
-        txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{gw.get_weather("厚木市")}'
-        line_notify.send_line(txt, user=myv.USER)
+        # Send weather information
+        zu.zu_weather()
 
         # Get traffic
         jam = gt.get_traffic()

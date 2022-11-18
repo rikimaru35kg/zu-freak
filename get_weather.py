@@ -20,10 +20,15 @@ def get_weather(dest='厚木市'):
     
     txt = ''
     for i in range(len(hours)):
-        txt += f'{hours[i]}: {weathers[i]} {temps[i]} {probs[i]} {precipitations[i]}'
+        txt += f'{hours[i]}: {weathers[i]} {temps[i]}'
+        txt += '\n'
+    txt += '\n--- 降水確率と降雨量 ---\n'
+    for i in range(len(hours)):
+        txt += f'{hours[i]}: {probs[i]} {precipitations[i]}'
         if i != len(hours) - 1:
             txt += '\n'
 
+    print(txt)
     return txt
 
 
