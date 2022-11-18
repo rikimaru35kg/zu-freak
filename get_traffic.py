@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
 
-def get_traffic():
+def get_traffic(direction='down'):
     result = ''
     try:
         path = '/usr/bin/chromedriver'
@@ -22,10 +22,15 @@ def get_traffic():
 
         elems = driver.find_elements(By.CLASS_NAME, 'traffic-result-row')
         for e in elems:
-            if e.text.startswith('東名<下り>'):
-                jam_info = e.text.replace('東名<下り>\n', '').replace('渋滞\n', '')
-                if '渋滞の情報はありません' not in jam_info:
-                    result = jam_info
+            if ( (direction == 'up') and
+                 (e.text.startswith('東名<上り>'))):
+                if '渋滞の情報はありません' not in e.text:
+                    result = e.text.replace('東名<上り>\n', '').replace('渋滞\n', '')
+                break
+            elif ( (direction == 'down') and
+                   (e.text.startswith('東名<下り>'))):
+                if '渋滞の情報はありません' not in e.text:
+                    result = e.text.replace('東名<下り>\n', '').replace('渋滞\n', '')
                 break
         
         driver.quit()
@@ -39,8 +44,14 @@ def get_traffic():
 
 
 if __name__ == '__main__':
-    jam = get_traffic()
+    jam = get_traffic('up')
     if jam == '':
-        print('なし！')
+        print('上り渋滞なし！')
+    else:
+        print(jam)
+
+    jam = get_traffic('down')
+    if jam == '':
+        print('下り渋滞なし！')
     else:
         print(jam)
