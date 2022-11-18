@@ -4,14 +4,9 @@ import datetime
 
 import cv2
 import numpy as np
-import keyring
 
-import line_notify
 import const as myv
-import get_weather as gw
-import get_traffic as gt
 import zu_notify_funcs as zu
-# import detect_fps as dfps
 
 
 def increment_frame_num(i, max):
@@ -21,42 +16,13 @@ def increment_frame_num(i, max):
     else:
         return i + 1
 
-
-def zu_notify(t_now, frame, user):
-    """Send LINE message
-    
-    Args:
-        t_now (datetime): current time
-        frame (np.ndarray): Image to be sent
-    """
-    message = \
-f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
-ズーカメラで動きが検知されました。
-
-現在のズー
-{keyring.get_password('zu', 'zu1')}
-
-現在＋過去のズー
-{keyring.get_password('zu', 'zu2')}"""
-
-    cv2.imwrite('zu.png', frame)
-    line_notify.send_line(message, 'zu.png', user)
-    cv2.imwrite(f'videos/pictures/debug_{t_now.strftime("%y%m%d_%H%M%S")}.png', roi)
-
-
+# Capture the video
 cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_065015.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_073516.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_074016.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_085016.mp4')
-# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221104_084702.mp4')
 
 # Preparation
 roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
 v_move = 0
-
-# fps = dfps.FpsDetector()
 
 # Main procedure
 frame_num = 0
@@ -66,34 +32,18 @@ while True:
     # Stop procdure from TIME_STOP ~ TIME_START
     ###############################
     t_now = datetime.datetime.now()
-    # t_now = t_now + datetime.timedelta(hours=12)  # debug
     if t_now.hour >= myv.TIME_STOP:
-        message = \
-f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
-今日も一日お疲れ様でした。
-ズーカメラは明日の朝{myv.TIME_START}時までお休みします。"""
-        line_notify.send_line(message, user=myv.USER, stamp=True)
+        # Sleep until TIME_START
+        zu.zu_sleep()
 
-        # sleep until TIME_START
-        time_start = datetime.datetime(t_now.year, t_now.month, t_now.day,
-                                       myv.TIME_START, t_now.minute, t_now.second)
-        t_delta = time_start + datetime.timedelta(days=1) - t_now
-        time.sleep(t_delta.seconds)
+        # Send weather information
+        zu.zu_weather()
+
+        # Send traffic information
+        zu.zu_traffic()
 
         # Recalculate t_now
         t_now = datetime.datetime.now()
-
-        # Get weather
-        txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{gw.get_weather("厚木市")}'
-        line_notify.send_line(txt, user=myv.USER)
-
-        # Get traffic
-        jam = gt.get_traffic()
-        if jam == '':
-            txt = f'\n今は東名下りに渋滞は無いみたいだワン'
-        else:
-            txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
-        line_notify.send_line(txt, user=myv.USER, stamp=True)
 
         # Send holiday information
         if t_now.isoweekday() == 1:
@@ -105,8 +55,6 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
     if frame_num == 0:
         ret, frame = cap.read()
         frame_num = increment_frame_num(frame_num, frame_cycle)
-        # fps.update_fps()
-        # print(fps.get_fps())
         
         # Read error
         if not ret:
@@ -189,14 +137,12 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
     if v_move >= myv.V_MOVE_THRE:
         # First detection
         if 't_save' not in locals():
-            # t_now = datetime.datetime.now()
-            zu_notify(t_now, roi, myv.USER)
+            zu.zu_notify(t_now, roi, myv.USER)
             t_save = t_now
         # After first detection
         else:
-            # t_now = datetime.datetime.now()
             if (t_now - t_save).seconds >= myv.INTERVAL:
-                zu_notify(t_now, roi, myv.USER)
+                zu.zu_notify(t_now, roi, myv.USER)
                 t_save = t_now
         
     ###############################
@@ -215,18 +161,6 @@ f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
         hybrid[2*roi_size[1]:3*roi_size[1], 2*roi_size[0]:3*roi_size[0]] = 0
     
         cv2.imshow('hy', hybrid)
-
-    # ###############################
-    # # Update frame cycle
-    # ###############################
-    # if ( (frame_cycle == myv.FRAME_CYCLE) and
-    #      (fps.get_fps() <= 13)):
-    #     frame_cycle = 1
-    #     print(f'frame_cycle is changed to {frame_cycle}')
-    # elif ( (frame_cycle < myv.FRAME_CYCLE) and
-    #        (fps.get_fps() >= 20)):
-    #     frame_cycle = myv.FRAME_CYCLE
-    #     print(f'frame_cycle is changed to {frame_cycle}')
 
     ###############################
     # wait key

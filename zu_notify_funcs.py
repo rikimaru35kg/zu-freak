@@ -1,9 +1,63 @@
+import time
 import datetime as dt
 
 import requests
+import keyring
+import cv2
 
 import const
 import line_notify
+import get_weather
+import get_traffic
+
+
+def zu_notify(t_now, frame, user):
+    """Send LINE message
+    
+    Args:
+        t_now (datetime): current time
+        frame (np.ndarray): Image to be sent
+    """
+    message = f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
+    ズーカメラで動きが検知されました。
+
+    現在のズー
+    {keyring.get_password('zu', 'zu1')}
+
+    現在＋過去のズー
+    {keyring.get_password('zu', 'zu2')}"""
+
+    cv2.imwrite('zu.png', frame)
+    line_notify.send_line(message, 'zu.png', user)
+
+
+def zu_sleep():
+    t_now = dt.datetime.now()
+
+    message = f"""{t_now.strftime("%Y/%m/%d %H:%M:%S")}
+    今日も一日お疲れ様でした。
+    ズーカメラは明日の朝{const.TIME_START}時までお休みします。"""
+    line_notify.send_line(message, user=const.USER, stamp=True)
+
+    # sleep until TIME_START
+    time_start = dt.datetime(t_now.year, t_now.month, t_now.day,
+                                    const.TIME_START, t_now.minute, t_now.second)
+    t_delta = time_start + dt.timedelta(days=1) - t_now
+    time.sleep(t_delta.seconds)
+
+
+def zu_weather():
+    txt = f'\nおはようございます\n今日の厚木市の天気だワン\n{get_weather.get_weather("厚木市")}'
+    line_notify.send_line(txt, user=const.USER)
+
+
+def zu_traffic():
+    jam = get_traffic.get_traffic()
+    if jam == '':
+        txt = f'\n今は東名下りに渋滞は無いみたいだワン'
+    else:
+        txt = f'\n東名下りに渋滞が発生しているワン\n{jam}'
+    line_notify.send_line(txt, user=const.USER, stamp=True)
 
 
 def zu_holiday():
@@ -37,5 +91,7 @@ def zu_holiday():
         line_notify.send_line(message, user=const.USER, stamp=True)
 
 
+
 if __name__ == '__main__':
-    zu_holiday()
+    import numpy as np
+    zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
