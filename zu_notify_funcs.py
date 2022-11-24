@@ -9,6 +9,7 @@ import const
 import line_notify
 import get_weather
 import get_traffic
+import send_pushbullet as spb
 
 
 def zu_notify(t_now, frame, user):
@@ -29,6 +30,8 @@ def zu_notify(t_now, frame, user):
 
     cv2.imwrite('zu.png', frame)
     line_notify.send_line(message, 'zu.png', user)
+
+    spb.send_pushbullet('ズーだよ', '動いたよ')
 
 
 def zu_sleep():
@@ -94,7 +97,8 @@ def zu_holiday():
 
 
 if __name__ == '__main__':
-    # import numpy as np
-    # zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
+    import numpy as np
+    zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
+
     # zu_weather()
-    zu_traffic('down')
+    # zu_traffic('down')
