@@ -9,7 +9,8 @@ import const
 import line_notify
 import get_weather
 import get_traffic
-import send_pushbullet as spb
+# import send_pushbullet as spb
+import play_sound as play
 
 
 def zu_notify(t_now, frame, user):
@@ -31,7 +32,9 @@ def zu_notify(t_now, frame, user):
     cv2.imwrite('zu.png', frame)
     line_notify.send_line(message, 'zu.png', user)
 
-    spb.send_pushbullet('ズーだよ', '動いたよ')
+    # spb.send_pushbullet('ズーだよ', '動いたよ')
+
+    play.play_sound(const.AUDIOFILE)
 
 
 def zu_sleep():

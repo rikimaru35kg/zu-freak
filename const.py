@@ -8,6 +8,8 @@ TIME_1 = 12
 TIME_2 = 18
 TIME_STOP = 21
 
+AUDIOFILE = './audio/成功音.mp3'
+
 # Input image resolution & ROI
 RESOLUTION = (640, 360)
 ROI = (300, 100, 580, 250)  # (X0, Y0, X1, Y1)
@@ -30,7 +32,7 @@ THRE_WIDTH = 30
 # Threshold of detected contour height [px]
 THRE_HEIGHT = 30
 # V_MOVE tuning parameters
-V_MOVE_INC = [0.7, 0.8, 1]
+V_MOVE_INC = [1.5, 1.5, 1.5]
 V_MOVE_DEC = 2
 V_MOVE_MAX = 100
 V_MOVE_THRE = 95
