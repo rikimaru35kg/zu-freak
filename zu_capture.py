@@ -7,6 +7,7 @@ import numpy as np
 
 import const as myv
 import zu_notify_funcs as zu
+import detect_dt
 
 
 def increment_frame_num(i, max):
@@ -17,12 +18,19 @@ def increment_frame_num(i, max):
         return i + 1
 
 # Capture the video
-cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
+# cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
+cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_065015.mp4')
+# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_073516.mp4')
+# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_074016.mp4')
+# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_085016.mp4')
+# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221104_084702.mp4')
 
 # Preparation
 roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
 v_move = 0
+dt_detector = detect_dt.DtDetector()
+
 # t_state
 t_hour = dt.datetime.now().hour
 if t_hour <= myv.TIME_1:
@@ -37,13 +45,16 @@ frame_num = 0
 frame_cycle = myv.FRAME_CYCLE
 while True:
     ###############################
-    # Stop procdure from TIME_STOP ~ TIME_START
+    # State transition for zu-notify functions
     ###############################
     t_now = dt.datetime.now()
     if ( (t_state == 0) and
-           (t_now.hour >= myv.TIME_1)):
+         (t_now.hour >= myv.TIME_1)):
         # Send weather information
         zu.zu_weather()
+
+        # Reset dt_detetor's time (after time-consuming task)
+        dt_detector.reset_time()
 
         # transition state
         t_state += 1
@@ -54,6 +65,9 @@ while True:
 
         # Send traffic information
         zu.zu_traffic('up')
+
+        # Reset dt_detetor's time (after time-consuming task)
+        dt_detector.reset_time()
 
         # transition state
         t_state += 1
@@ -75,6 +89,9 @@ while True:
         if t_now.isoweekday() == 1:
             zu.zu_holiday()
         
+        # Reset dt_detetor's time (after time-consuming task)
+        dt_detector.reset_time()
+
         # Reset state
         t_state = 0
 
@@ -149,14 +166,17 @@ while True:
     cnt_obj = 0
     for rect in cont_rects:
         if rect[2] >= myv.THRE_WIDTH and rect[3] >= myv.THRE_HEIGHT:
-            cnt_obj = min(cnt_obj + 1, len(myv.V_MOVE_INC) - 1)
+            cnt_obj = min(cnt_obj + 1, len(myv.V_MOVE_COEF_INC) - 1)
+
+    # Detect delta t
+    delta_t = dt_detector.get_dt()
 
     # Increment t_move
     if cnt_obj > 0:
-        v_move = min(v_move + myv.V_MOVE_INC[cnt_obj - 1], myv.V_MOVE_MAX)
+        v_move = min(v_move + delta_t*myv.V_MOVE_COEF_INC[cnt_obj-1], myv.V_MOVE_MAX)
     # Decrement t_move
     else:
-        v_move = max(v_move - myv.V_MOVE_DEC, 0)
+        v_move = max(v_move - delta_t*myv.V_MOVE_COEF_DEC, 0)
     
     cv2.putText(infoframe, f'v_move={v_move:.1f}', (10, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2)
 
