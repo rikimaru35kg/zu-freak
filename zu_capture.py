@@ -18,8 +18,8 @@ def increment_frame_num(i, max):
         return i + 1
 
 # Capture the video
-# cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
-cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_065015.mp4')
+cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
+# cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_065015.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_073516.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_074016.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_085016.mp4')
