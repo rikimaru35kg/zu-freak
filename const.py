@@ -30,10 +30,10 @@ THRE_WIDTH = 30
 # Threshold of detected contour height [px]
 THRE_HEIGHT = 30
 # V_MOVE tuning parameters
-V_MOVE_INC = [0.7, 0.8, 1]
-V_MOVE_DEC = 2
-V_MOVE_MAX = 100
-V_MOVE_THRE = 95
+V_MOVE_COEF_INC = [1.0, 1.0, 1.2]
+V_MOVE_COEF_DEC = 2
+V_MOVE_MAX = 10
+V_MOVE_THRE = 3
 
 # LINE notification interval
 INTERVAL = 600  # [sec]
