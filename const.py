@@ -1,14 +1,12 @@
 # LINE receiver
-USER = 'family'
-# USER = 'me'
+# USER = 'family'
+USER = 'me'
 
 # STOP & START time [hour]
 TIME_START = 6
 TIME_1 = 12
 TIME_2 = 18
 TIME_STOP = 21
-
-AUDIOFILE = './audio/成功音.mp3'
 
 # Input image resolution & ROI
 RESOLUTION = (640, 360)

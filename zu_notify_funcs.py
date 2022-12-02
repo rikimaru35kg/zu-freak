@@ -34,7 +34,7 @@ def zu_notify(t_now, frame, user):
 
     # spb.send_pushbullet('ズーだよ', '動いたよ')
 
-    play.play_sound(const.AUDIOFILE)
+    play.play_sound('./audio')
 
 
 def zu_sleep():
