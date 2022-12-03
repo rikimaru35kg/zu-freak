@@ -55,6 +55,9 @@ while True:
 
         # Reset dt_detetor's time (after time-consuming task)
         dt_detector.reset_time()
+        # Reset moving averages (delete variables)
+        if 'avg_long' in locals(): del avg_long
+        if 'avg_short' in locals(): del avg_short
 
         # transition state
         t_state += 1
@@ -68,6 +71,9 @@ while True:
 
         # Reset dt_detetor's time (after time-consuming task)
         dt_detector.reset_time()
+        # Reset moving averages (delete variables)
+        if 'avg_long' in locals(): del avg_long
+        if 'avg_short' in locals(): del avg_short
 
         # transition state
         t_state += 1
@@ -91,6 +97,9 @@ while True:
         
         # Reset dt_detetor's time (after time-consuming task)
         dt_detector.reset_time()
+        # Reset moving averages (delete variables)
+        if 'avg_long' in locals(): del avg_long
+        if 'avg_short' in locals(): del avg_short
 
         # Reset state
         t_state = 0
