@@ -18,13 +18,13 @@ def increment_frame_num(i, max):
         return i + 1
 
 # Capture the video
-# cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
+cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_065015.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_073516.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_074016.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_085016.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221104_084702.mp4')
-cap = cv2.VideoCapture('./videos/test_samples/light_change.mp4')
+# cap = cv2.VideoCapture('./videos/test_samples/light_change.mp4')
 
 # Preparation
 roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
@@ -176,7 +176,9 @@ while True:
     cnt_obj = 0
     susp_coef = 1.0
     for rect in cont_rects:
-        if rect[2] >= myv.THRE_WIDTH and rect[3] >= myv.THRE_HEIGHT:
+        if ( (rect[2] >= myv.THRE_WIDTH) and
+             (rect[3] >= myv.THRE_HEIGHT) and
+             (rect[1] != 0)):
             # Increment object counter
             cnt_obj = min(cnt_obj + 1, len(myv.V_MOVE_COEF_INC) - 1)
             # Judge suspicous height (too low or not)

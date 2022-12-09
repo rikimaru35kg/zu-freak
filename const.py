@@ -1,6 +1,6 @@
 # LINE receiver
-# USER = 'family'
-USER = 'me'
+USER = 'family'
+# USER = 'me'
 
 # STOP & START time [hour]
 TIME_START = 6
@@ -35,7 +35,7 @@ V_MOVE_COEF_DEC = 2
 V_MOVE_MAX = 10  # [sec]
 V_MOVE_THRE = 4  # [sec]
 # Suspicious height threshold
-SUSP_HEIGHT_THRE = 65  # [px]
+SUSP_HEIGHT_THRE = 70  # [px]
 SUSP_COEF = 0.3
 
 # LINE notification interval
