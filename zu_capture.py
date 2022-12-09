@@ -24,6 +24,7 @@ cap = cv2.VideoCapture('http://192.168.10.99:8080/?action=stream')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_074016.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221028_085016.mp4')
 # cap = cv2.VideoCapture('./videos/test_samples/zu_record_20221104_084702.mp4')
+# cap = cv2.VideoCapture('./videos/test_samples/light_change.mp4')
 
 # Preparation
 roi_size = (myv.ROI[2]-myv.ROI[0], myv.ROI[3]-myv.ROI[1])
@@ -55,6 +56,9 @@ while True:
 
         # Reset dt_detetor's time (after time-consuming task)
         dt_detector.reset_time()
+        # Reset moving averages (delete variables)
+        if 'avg_long' in locals(): del avg_long
+        if 'avg_short' in locals(): del avg_short
 
         # transition state
         t_state += 1
@@ -68,6 +72,9 @@ while True:
 
         # Reset dt_detetor's time (after time-consuming task)
         dt_detector.reset_time()
+        # Reset moving averages (delete variables)
+        if 'avg_long' in locals(): del avg_long
+        if 'avg_short' in locals(): del avg_short
 
         # transition state
         t_state += 1
@@ -91,6 +98,9 @@ while True:
         
         # Reset dt_detetor's time (after time-consuming task)
         dt_detector.reset_time()
+        # Reset moving averages (delete variables)
+        if 'avg_long' in locals(): del avg_long
+        if 'avg_short' in locals(): del avg_short
 
         # Reset state
         t_state = 0
@@ -160,25 +170,37 @@ while True:
             cv2.rectangle(infoframe, pt1, pt2, (255, 0, 0), 1)
 
     ###############################
-    # move value (possibility 0~100)
+    # move value (Basically detection seconds)
     ###############################
     # Count the number of objects detected
     cnt_obj = 0
+    susp_coef = 1.0
     for rect in cont_rects:
-        if rect[2] >= myv.THRE_WIDTH and rect[3] >= myv.THRE_HEIGHT:
+        if ( (rect[2] >= myv.THRE_WIDTH) and
+             (rect[3] >= myv.THRE_HEIGHT) and
+             (rect[1] != 0)):
+            # Increment object counter
             cnt_obj = min(cnt_obj + 1, len(myv.V_MOVE_COEF_INC) - 1)
+            # Judge suspicous height (too low or not)
+            if rect[1] >= myv.SUSP_HEIGHT_THRE:
+                susp_coef = myv.SUSP_COEF
+            else:
+                susp_coef = 1.0
 
     # Detect delta t
     delta_t = dt_detector.get_dt()
 
     # Increment t_move
     if cnt_obj > 0:
-        v_move = min(v_move + delta_t*myv.V_MOVE_COEF_INC[cnt_obj-1], myv.V_MOVE_MAX)
+        v_move = min(v_move + delta_t*susp_coef*myv.V_MOVE_COEF_INC[cnt_obj-1], myv.V_MOVE_MAX)
     # Decrement t_move
     else:
         v_move = max(v_move - delta_t*myv.V_MOVE_COEF_DEC, 0)
     
-    cv2.putText(infoframe, f'v_move={v_move:.1f}', (10, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2)
+    # Drawing on infoframe
+    cv2.putText(infoframe, f'v_move={v_move:.1f}', (10, 20), cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 255, 0), 2)
+    cv2.putText(infoframe, f'susp_coef={susp_coef:.1f}', (10, 40), cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 255, 0), 2)
+    cv2.line(infoframe, (0, myv.SUSP_HEIGHT_THRE), (roi_size[0]-1, myv.SUSP_HEIGHT_THRE), (0, 0, 255))
 
     ###############################
     # LINE Notification
