@@ -1,6 +1,6 @@
 # LINE receiver
-# USER = 'family'
-USER = 'me'
+USER = 'family'
+# USER = 'me'
 
 # STOP & START time [hour]
 TIME_START = 6
@@ -19,7 +19,7 @@ FRAME_CYCLE = 2
 # Moving average
 FILT_GRAY_LONG = 0.05
 FILT_GRAY_SHORT = 0.1
-# Pick-up threshold (from diff image)
+# Pick-up threshold (from diff image) [px]
 THRE_BIN_LOW = 10
 # Close kernel size [px]
 N_CLOSE = 3
@@ -32,11 +32,14 @@ THRE_HEIGHT = 30
 # V_MOVE tuning parameters
 V_MOVE_COEF_INC = [1.0, 1.0, 1.2]
 V_MOVE_COEF_DEC = 2
-V_MOVE_MAX = 10
-V_MOVE_THRE = 3
+V_MOVE_MAX = 10  # [sec]
+V_MOVE_THRE = 4  # [sec]
+# Suspicious height threshold
+SUSP_HEIGHT_THRE = 70  # [px]
+SUSP_COEF = 0.3
 
 # LINE notification interval
-INTERVAL = 600  # [sec]
+INTERVAL = 300  # [sec]
 
 # imshow size for debugging
 DISP_SIZE = (3, 3)

@@ -1,5 +1,6 @@
 import time
 import datetime as dt
+import traceback
 
 import requests
 import keyring
@@ -69,39 +70,63 @@ def zu_traffic(direction='down'):
 
 def zu_holiday():
     """Send holiday information by LINE"""
-    now = dt.datetime.now()
-    year = now.year
-    cw_this = now.isocalendar().week
-    cw_next = (now + dt.timedelta(weeks=1)).isocalendar().week
+    try:
+        now = dt.datetime.now()
+        year = now.year
+        cw_this = now.isocalendar().week
+        cw_next = (now + dt.timedelta(weeks=1)).isocalendar().week
 
-    holidays = []
-    for y in [year, year + 1]:
-        url = 'https://api.national-holidays.jp/' + str(y)
-        res = requests.get(url)
-        holidays += res.json()
+        holidays = []
+        for y in [year, year + 1]:
+            url = 'https://api.national-holidays.jp/' + str(y)
+            res = requests.get(url)
+            if type(res.json()) is list:
+                holidays += res.json()
+                # [NOTE] ---------------------------------
+                # If no information is stored on the above url,
+                # {'error': 'not found'} is returned.
+                # Normally, [{'date': '-'}, {'date': '-'}, ...]
+                # is returned. (list is returned normally)
+                # ----------------------------------------
 
-    h_thisweek = []
-    for holiday in holidays:
-        _year = dt.datetime.strptime(holiday['date'], '%Y-%m-%d').year
-        _cw = dt.datetime.strptime(holiday['date'], '%Y-%m-%d').isocalendar().week
-        if ( ( (_year == year) and
-               (_cw == cw_this)) or
-             ( (_year == year + 1) and
-               (_cw == cw_next))):
-            h_thisweek.append(holiday)
+        h_thisweek = []
+        for holiday in holidays:
+            if 'date' not in holiday.keys():
+                continue
+                # [NOTE] ---------------------------
+                # Just in case there is not 'date' key
+                # ----------------------------------
+            _year = dt.datetime.strptime(holiday['date'], '%Y-%m-%d').year
+            _cw = dt.datetime.strptime(holiday['date'], '%Y-%m-%d').isocalendar().week
+            if ( ( (_year == year) and
+                (_cw == cw_this)) or
+                ( (_year == year) and
+                (_cw == cw_next)) or
+                ( (_year == year + 1) and
+                (_cw == cw_next))):
+                h_thisweek.append(holiday)
 
-    if len(h_thisweek) > 0:
-        message = '今週と来週の祝日情報だワン'
-        for d in h_thisweek:
-            message += f'\n{d["date"]}: {d["name"]}({d["type"]})'
-        
-        line_notify.send_line(message, user=const.USER, stamp=True)
+        if len(h_thisweek) > 0:
+            message = '今週と来週の祝日情報だワン'
+            for d in h_thisweek:
+                message += f'\n{d["date"]}: {d["name"]}({d["type"]})'
+            
+            line_notify.send_line(message, user=const.USER, stamp=True)
+    except:
+        print('-------------------------------------------')
+        print(f'Error: {dt.datetime.now().strftime("%Y/%m/%d-%H:%M:%S")}')
+        print('Location: zu_holiday() in zu_notify_funcs.py')
+        traceback.print_exc()
+        print('Continue operation...')
 
 
 
 if __name__ == '__main__':
-    import numpy as np
-    zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
+    # import numpy as np
+    # zu_notify(dt.datetime.now(), np.ones((25, 25, 3), dtype='uint8')*100, const.USER)
 
     # zu_weather()
+
     # zu_traffic('down')
+
+    zu_holiday()
