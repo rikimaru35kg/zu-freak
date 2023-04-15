@@ -10,7 +10,7 @@ TIME_STOP = 21
 
 # Input image resolution & ROI
 RESOLUTION = (640, 360)
-ROI = (300, 100, 580, 250)  # (X0, Y0, X1, Y1)
+ROI = (150, 0, 640, 360)  # (X0, Y0, X1, Y1)
 
 # 1 process / FRAME_CYCLE to reduce calculation cost
 FRAME_CYCLE = 2
@@ -35,7 +35,7 @@ V_MOVE_COEF_DEC = 2
 V_MOVE_MAX = 10  # [sec]
 V_MOVE_THRE = 4  # [sec]
 # Suspicious height threshold
-SUSP_HEIGHT_THRE = 70  # [px]
+SUSP_HEIGHT_THRE = 160  # [px]
 SUSP_COEF = 0.3
 
 # LINE notification interval
